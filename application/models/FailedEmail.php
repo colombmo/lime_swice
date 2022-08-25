@@ -200,6 +200,11 @@ class FailedEmail extends LSActiveRecord
         ], true);
         return $buttons;
     }
+
+    /**
+     * create a link to the response if it exists, else just return the id
+     * @return string
+     */
     public function getResponseUrl(): string
     {
         $response = Response::model($this->surveyid)->findByPk($this->responseid);
@@ -207,7 +212,7 @@ class FailedEmail extends LSActiveRecord
             $responseUrl = App()->createUrl("responses/view/", ['surveyId' => $this->surveyid, 'id' => $this->responseid]);
             $responseLink = '<a href="' . $responseUrl . '" role="button" data-toggle="tooltip" title="' . gT('View response details') . '">' . $this->responseid . '</a>';
         } else {
-            $responseLink = $this->responseid;
+            $responseLink = (string)$this->responseid;
         }
         return $responseLink;
     }
