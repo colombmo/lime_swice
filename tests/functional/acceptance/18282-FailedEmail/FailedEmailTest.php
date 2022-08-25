@@ -5,6 +5,7 @@ namespace ls\tests;
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\Exception\TimeOutException;
 use FailedEmail;
 
 class FailedEmailTest extends TestBaseClassWeb
