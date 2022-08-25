@@ -1159,7 +1159,7 @@ function populateDatabase($oDB)
         }
 
         $oDB->createCommand()->createTable(
-            '{{failed_email}}',
+            '{{failed_emails}}',
             [
                 'id' => "pk",
                 'surveyid' => "integer NOT NULL",

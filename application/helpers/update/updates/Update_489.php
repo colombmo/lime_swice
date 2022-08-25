@@ -13,7 +13,7 @@ class Update_489 extends DatabaseUpdateBase
     public function up()
     {
         $this->db->createCommand()->createTable(
-            '{{failed_email}}',
+            '{{failed_emails}}',
             [
                 'id' => "pk",
                 'surveyid' => "integer NOT NULL",
