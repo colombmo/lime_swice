@@ -72,7 +72,7 @@ class FailedEmailController extends LSBaseController
             $this->redirect(['failedEmail/index/', 'surveyid' => $surveyId]);
         }
         $preserveResend = App()->request->getParam('preserveResend');
-        $preserveResend = isset($preserveResend);
+        $preserveResend = !is_null($preserveResend);
         $item = [App()->request->getParam('item')];
         $items = json_decode(App()->request->getParam('sItems'));
         $selectedItems = $items ?? $item;
