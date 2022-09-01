@@ -222,7 +222,7 @@ class LimeMailer extends \PHPMailer\PHPMailer\PHPMailer
     /**
      * To get a singleton : some part are not needed to do X times
      * @param integer $reset totally or partially the instance
-     * return \LimeMailer
+     * @return LimeMailer
      */
     public static function getInstance($reset = self::ResetBase)
     {
@@ -386,6 +386,26 @@ class LimeMailer extends \PHPMailer\PHPMailer\PHPMailer
     {
         $this->clearAddresses();
         $this->addAddress($addressTo, $name);
+    }
+
+    /**
+     * set the body
+     * @param string $body body to be set as string
+     * @return void
+     */
+    public function setBody(string $body): void
+    {
+        $this->Body = $body;
+    }
+
+    /**
+     * set the body
+     * @param string $subject body to be set as string
+     * @return void
+     */
+    public function setSubject(string $subject): void
+    {
+        $this->Subject = $subject;
     }
 
     /**
@@ -604,6 +624,24 @@ class LimeMailer extends \PHPMailer\PHPMailer\PHPMailer
             return false;
         }
         return parent::Send();
+    }
+
+    /**
+     * the subject rendered through preSend
+     * @return string The email body as string to be saved
+     */
+    public function getMIMEBody()
+    {
+        return $this->MIMEBody;
+    }
+
+    /**
+     * the body rendered through preSend
+     * @return string The email subject as string to be saved
+     */
+    public function getSubject()
+    {
+        return $this->Subject;
     }
 
     /**

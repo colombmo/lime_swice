@@ -8,6 +8,8 @@
  * @property integer $surveyid the surveyid this one belongs to
  * @property integer $responseid the id of the participants response
  * @property string $email_type the email type
+ * @property string $email_subject the subject of the email
+ * @property string $email_body the content of the email body
  * @property string $recipient the recipients email address
  * @property string $language the email language
  * @property string $error_message the error message
@@ -42,7 +44,7 @@ class FailedEmail extends LSActiveRecord
     public function rules(): array
     {
         return [
-            ['id, surveyid, responseid, email_type, recipient, error_message, created', 'required'],
+            ['id, surveyid, responseid, email_subject, email_body, email_type, recipient, error_message, created', 'required'],
             ['email_type', 'length', 'max' => 200],
             ['recipient', 'length', 'max' => 320],
             ['status', 'length', 'max' => 20],

@@ -2681,6 +2681,7 @@ class PHPMailer
         }
         if (!$this->sign_key_file) {
             $result .= $this->headerLine('MIME-Version', '1.0');
+            $this->message_type = 'alt';
             $result .= $this->getMailMIME();
         }
 

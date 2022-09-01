@@ -97,6 +97,8 @@ class FailedEmailController extends LSBaseController
                         'responseId' => $failedEmail->responseid,
                         'recipient' => $failedEmail->recipient,
                         'language' => $failedEmail->language,
+                        'emailSubject' => $failedEmail->email_subject,
+                        'emailBody' => $failedEmail->email_body,
                     ];
                 }
                 $result = sendSubmitNotifications($surveyId, $emailsByType, $preserveResend, true);
