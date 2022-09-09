@@ -529,9 +529,7 @@ function sendSubmitNotifications($surveyid, array $emails = [], bool $return = f
                 $emailLanguage = $sRecipient['language'];
                 $mailer->setTypeWithRaw('admin_notification', $emailLanguage);
                 $mailer->setTo($notificationRecipient);
-                $mailer->setSubject($sRecipient['emailSubject']);
-                $mailer->setBody($sRecipient['emailBody']);
-                $mailerSuccess = $mailer->Send();
+                $mailerSuccess = $mailer->resend(json_decode($sRecipient['resendVars'],true));
             } else {
                 $failedNotificationId = null;
                 $notificationRecipient = $sRecipient;
@@ -574,9 +572,7 @@ function sendSubmitNotifications($surveyid, array $emails = [], bool $return = f
                 $emailLanguage = $sRecipient['language'];
                 $mailer->setTypeWithRaw('admin_responses', $emailLanguage);
                 $mailer->setTo($responseRecipient);
-                $mailer->setSubject($sRecipient['emailSubject']);
-                $mailer->setBody($sRecipient['emailBody']);
-                $mailerSuccess = $mailer->Send();
+                $mailerSuccess = $mailer->resend(json_decode($sRecipient['resendVars'],true));
             } else {
                 $failedNotificationId = null;
                 $responseRecipient = $sRecipient;
@@ -645,14 +641,11 @@ function saveFailedEmail(?int $id, ?string $recipient, int $surveyId, int $respo
 {
     $failedEmailModel = new FailedEmail();
     $errorMessage = $mailer->getError();
-    $emailContent = $mailer->getMIMEBody();
-    $emailSubject = $mailer->getSubject();
+    $resendVars = json_encode($mailer->getResendEmailVars());
     if (isset($id)) {
         $failedEmail = $failedEmailModel->findByPk($id);
         if (isset($failedEmail)) {
             $failedEmail->surveyid = $surveyId;
-            $failedEmail->email_subject = $emailSubject;
-            $failedEmail->email_body = $emailContent;
             $failedEmail->error_message = $errorMessage;
             $failedEmail->status = 'SEND FAILED';
             $failedEmail->updated = date('Y-m-d H:i:s');
@@ -662,14 +655,13 @@ function saveFailedEmail(?int $id, ?string $recipient, int $surveyId, int $respo
     $failedEmailModel->recipient = $recipient;
     $failedEmailModel->surveyid = $surveyId;
     $failedEmailModel->responseid = $responseId;
-    $failedEmailModel->email_subject = $emailSubject;
-    $failedEmailModel->email_body = $emailContent;
     $failedEmailModel->email_type = $emailType;
     $failedEmailModel->language = $language;
     $failedEmailModel->error_message = $errorMessage;
     $failedEmailModel->created = date('Y-m-d H:i:s');
     $failedEmailModel->status = 'SEND FAILED';
     $failedEmailModel->updated = date('Y-m-d H:i:s');
+    $failedEmailModel->resend_vars = $resendVars;
 
     return $failedEmailModel->save(false);
 }

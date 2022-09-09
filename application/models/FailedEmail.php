@@ -8,8 +8,6 @@
  * @property integer $surveyid the surveyid this one belongs to
  * @property integer $responseid the id of the participants response
  * @property string $email_type the email type
- * @property string $email_subject the subject of the email
- * @property string $email_body the content of the email body
  * @property string $recipient the recipients email address
  * @property string $language the email language
  * @property string $error_message the error message
@@ -17,6 +15,7 @@
  * @property string $status status in which this entry is default 'SEND FAILED'
  * @property string $updated datetime when it was last updated
  * @property Survey $survey the surveyobject related to the entry
+ * @property string $resend_vars json encoded values needed to resend the email [message_type,Subject,uniqueid,boundary[1],boundary[2],boundary[3],MIMEBody]
  *
  * @psalm-suppress InvalidScalarArgument
  */
@@ -44,7 +43,7 @@ class FailedEmail extends LSActiveRecord
     public function rules(): array
     {
         return [
-            ['id, surveyid, responseid, email_subject, email_body, email_type, recipient, error_message, created', 'required'],
+            ['id, surveyid, responseid, email_type, recipient, error_message, created, resend_vars', 'required'],
             ['email_type', 'length', 'max' => 200],
             ['recipient', 'length', 'max' => 320],
             ['status', 'length', 'max' => 20],

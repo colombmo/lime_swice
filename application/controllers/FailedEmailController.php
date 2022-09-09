@@ -97,11 +97,10 @@ class FailedEmailController extends LSBaseController
                         'responseId' => $failedEmail->responseid,
                         'recipient' => $failedEmail->recipient,
                         'language' => $failedEmail->language,
-                        'emailSubject' => $failedEmail->email_subject,
-                        'emailBody' => $failedEmail->email_body,
+                        'resendVars' => $failedEmail->resend_vars,
                     ];
                 }
-                $result = sendSubmitNotifications($surveyId, $emailsByType, $preserveResend, true);
+                $result = sendSubmitNotifications($surveyId, $emailsByType, true);
                 if (!$preserveResend) {
                     // only delete FailedEmail entries that have succeeded
                     $criteria->addCondition('status = :status');
