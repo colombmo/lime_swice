@@ -570,37 +570,18 @@ function sendSubmitNotifications($surveyid, array $emails = [], bool $return = f
                 $responseId = $sRecipient['responseId'];
                 $responseRecipient = $sRecipient['recipient'];
                 $emailLanguage = $sRecipient['language'];
+                $aReplacementVars['ANSWERTABLE'] = getResponseTableReplacement($surveyid, $responseId, $emailLanguage, $bIsHTML);
+                LimeExpressionManager::updateReplacementFields($aReplacementVars);
                 $mailer->setTypeWithRaw('admin_responses', $emailLanguage);
                 $mailer->setTo($responseRecipient);
                 $mailerSuccess = $mailer->resend(json_decode($sRecipient['resendVars'],true));
             } else {
                 $failedNotificationId = null;
                 $responseRecipient = $sRecipient;
+                $aReplacementVars['ANSWERTABLE'] = getResponseTableReplacement($surveyid, $responseId, $emailLanguage, $bIsHTML);
+                LimeExpressionManager::updateReplacementFields($aReplacementVars);
                 $mailer->setTo($responseRecipient);
                 $mailerSuccess = $mailer->SendMessage();
-            }
-            $aFullResponseTable = getFullResponseTable($surveyid, $responseId, $emailLanguage);
-            $ResultTableHTML = "<table class='printouttable' >\n";
-            $ResultTableText = "\n\n";
-            Yii::import('application.helpers.viewHelper');
-            foreach ($aFullResponseTable as $sFieldname => $fname) {
-                if (substr($sFieldname, 0, 4) === 'gid_') {
-                    $ResultTableHTML .= "\t<tr class='printanswersgroup'><td colspan='2'>" . viewHelper::flatEllipsizeText($fname[0], true, 0) . "</td></tr>\n";
-                    $ResultTableText .= "\n{$fname[0]}\n\n";
-                } elseif (substr($sFieldname, 0, 4) === 'qid_') {
-                    $ResultTableHTML .= "\t<tr class='printanswersquestionhead'><td  colspan='2'>" . viewHelper::flatEllipsizeText($fname[0], true, 0) . "</td></tr>\n";
-                    $ResultTableText .= "\n{$fname[0]}\n";
-                } else {
-                    $ResultTableHTML .= "\t<tr class='printanswersquestion'><td>" . viewHelper::flatEllipsizeText("{$fname[0]} {$fname[1]}", true, 0) . "</td><td class='printanswersanswertext'>" . CHtml::encode($fname[2]) . "</td></tr>\n";
-                    $ResultTableText .= "     {$fname[0]} {$fname[1]}: {$fname[2]}\n";
-                }
-            }
-            $ResultTableHTML .= "</table>\n";
-            $ResultTableText .= "\n\n";
-            if ($bIsHTML) {
-                $aReplacementVars['ANSWERTABLE'] = $ResultTableHTML;
-            } else {
-                $aReplacementVars['ANSWERTABLE'] = $ResultTableText;
             }
             if (!$mailerSuccess) {
                 $failedEmailCount++;
@@ -623,6 +604,42 @@ function sendSubmitNotifications($surveyid, array $emails = [], bool $return = f
             'failedEmailCount'      => $failedEmailCount,
         ];
     }
+}
+
+/**
+ * create ANSWERTABLE replacement field content
+ * @param $surveyid
+ * @param $responseId
+ * @param $emailLanguage
+ * @param $bIsHTML
+ * @return string
+ * @throws CException
+ */
+function getResponseTableReplacement($surveyid, $responseId, $emailLanguage, $bIsHTML): string
+{
+    $aFullResponseTable = getFullResponseTable($surveyid, $responseId, $emailLanguage);
+    $ResultTableHTML = "<table class='printouttable' >\n";
+    $ResultTableText = "\n\n";
+    Yii::import('application.helpers.viewHelper');
+    foreach ($aFullResponseTable as $sFieldname => $fname) {
+        if (substr($sFieldname, 0, 4) === 'gid_') {
+            $ResultTableHTML .= "\t<tr class='printanswersgroup'><td colspan='2'>" . viewHelper::flatEllipsizeText($fname[0], true, 0) . "</td></tr>\n";
+            $ResultTableText .= "\n{$fname[0]}\n\n";
+        } elseif (substr($sFieldname, 0, 4) === 'qid_') {
+            $ResultTableHTML .= "\t<tr class='printanswersquestionhead'><td  colspan='2'>" . viewHelper::flatEllipsizeText($fname[0], true, 0) . "</td></tr>\n";
+            $ResultTableText .= "\n{$fname[0]}\n";
+        } else {
+            $ResultTableHTML .= "\t<tr class='printanswersquestion'><td>" . viewHelper::flatEllipsizeText("{$fname[0]} {$fname[1]}", true, 0) . "</td><td class='printanswersanswertext'>" . CHtml::encode($fname[2]) . "</td></tr>\n";
+            $ResultTableText .= "     {$fname[0]} {$fname[1]}: {$fname[2]}\n";
+        }
+    }
+    $ResultTableHTML .= "</table>\n";
+    $ResultTableText .= "\n\n";
+
+    if ($bIsHTML) {
+        return $ResultTableHTML;
+    }
+    return $ResultTableText;
 }
 
 /**
