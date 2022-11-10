@@ -81,6 +81,99 @@ var remixIcons = [
         old: "image",
         new: "ri-image-line",
     },
+    {
+        old: "cut",
+        new: "ri-scissors-cut-fill",
+    },
+    {
+        old: "copy",
+        new: "ri-file-copy-line",
+    },
+    {
+        old: "paste",
+        new: "ri-clipboard-line",
+    },
+    {
+        old: "undo",
+        new: "ri-arrow-go-back-fill",
+    },
+    {
+        old: "redo",
+        new: "ri-arrow-go-forward-fill",
+    },
+    {
+        old: "find",
+        new: "ri-search-line",
+    },
+    {
+        old: "replace",
+        new: "ri-arrow-left-right-fill",
+    },
+    {
+        old: "selectall",
+        new: "ri-file-text-line",
+    },
+    {
+        old: "removeformat",
+        new: "ri-format-clear"
+    },
+    {
+        old: "html5video",
+        new: "ri-movie-2-line"
+    },
+    {
+        old: "videodetector",
+        new: "ri-video-line"
+    },
+    {
+        old: "table",
+        new: "ri-table-line"
+    },
+    {
+        old: "emojipanel",
+        new: "ri-emotion-line"
+    },
+    {
+        old: "specialchar",
+        new: "ri-omega"
+    },
+    {
+        old: "strike",
+        new: "ri-strikethrough"
+    },
+    {
+        old: "subscript",
+        new: "ri-subscript"
+    },
+    {
+        old: "superscript",
+        new: "ri-superscript"
+    },
+    {
+        old: "blockquote",
+        new: "ri-double-quotes-r"
+    },
+    {
+        old: "creatediv",
+        new: "ri-code-fill"
+    },
+    {
+        old: "bidiltr",
+        new: "ri-text-direction-l"
+    },
+    {
+        old: "bidirtl",
+        new: "ri-text-direction-r"
+    },
+    {
+        old: "showblocks",
+        new: "ri-aspect-ratio-line"
+    },
+    {
+        old: "anchor",
+        new: "ri-flag-fill"
+    },
+   
 ];
 
 CKEDITOR.editorConfig = function (a) {
@@ -164,8 +257,10 @@ CKEDITOR.on("instanceReady", function (event) {
     var this_instance = document.getElementById(event.editor.id + "_toolbox");
 
     for (var i = 0; i < remixIcons.length; i++) {
+        console.log('remixIcons[i].old : ', remixIcons[i].old );
         var this_button = this_instance.querySelector(
             ".cke_button__" + remixIcons[i].old + "_icon"
+            
         );
         if (typeof this_button !== null) {
             // if (typeof plgnIcons[i] === undefined)
