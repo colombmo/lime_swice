@@ -7,53 +7,86 @@ var editor;
 var plgnNames =
     "limereplacementfields,codemirror,editorplaceholder,lsswitchtoolbars,sourcedialog";
 
-var plgnIconSize = "15px";
-var plgnIcons = [
-    "ri-fullscreen-fill",
-    "ri-code-s-slash-fill",
-    "ri-braces-fill",
-    "ri-grid-fill",
-    "ri-bold",
-    "ri-italic",
-    "ri-underline",
-     "ri-list-ordered",
-     "ri-list-check",
-     "ri-indent-increase",
-     "ri-indent-decrease",
-     "ri-align-left",
-     "ri-align-center",
-     "ri-align-right",
-     "ri-align-justify",
-     "ri-link",
-     "ri-link-unlink",
-     "ri-image-line"
-];
+var remixIcons = [
+    {
+        old: "maximize",
+        new: "ri-fullscreen-fill",
+    },
+    {
+        old: "sourcedialog",
+        new: "ri-code-s-slash-fill",
+    },
+    {
+        old: "createlimereplacementfields",
+        new: "ri-braces-fill",
+    },
+    {
+        old: "switchtoolbar",
+        new: "ri-grid-fill",
+    },
+    {
+        old: "bold",
+        new: "ri-bold",
+    },
+    {
+        old: "italic",
+        new: "ri-italic",
+    },
+    {
+        old: "underline",
+        new: "ri-underline",
+    },
+    {
+        old: "numberedlist",
+        new: "ri-list-ordered",
+    },
+    {
+        old: "bulletedlist",
+        new: "ri-list-check",
+    },
+    {
+        old: "outdent",
+        new: "ri-indent-increase",
+    },
+    {
+        old: "indent",
+        new: "ri-indent-decrease",
+    },
+    {
+        old: "justifyleft",
+        new: "ri-align-left",
+    },
 
-var replacingIcons = [
-    "maximize",
-    "sourcedialog",
-    "createlimereplacementfields",
-    "switchtoolbar",
-    "bold",
-    "italic",
-    "underline",
-    "numberedlist",
-    "bulletedlist",
-    "outdent",
-    "indent",
-    "justifyleft",
-    "justifycenter",
-    "justifyright",
-    "justifyblock",
-    "link",
-    "unlink",
-    "image"
+    {
+        old: "justifycenter",
+        new: "ri-align-center",
+    },
+    {
+        old: "justifyright",
+        new: "ri-align-right",
+    },
+    {
+        old: "justifyblock",
+        new: "ri-align-justify",
+    },
+    {
+        old: "link",
+        new: "ri-link",
+    },
+    {
+        old: "unlink",
+        new: "ri-link-unlink",
+    },
+    {
+        old: "image",
+        new: "ri-image-line",
+    },
 ];
 
 CKEDITOR.editorConfig = function (a) {
     
         a.plugins = "a11ychecker,dialogui,dialog,a11yhelp,about,xml,ajax,basicstyles,bidi,blockquote,notification,button,toolbar,clipboard,codemirror,panelbutton,panel,floatpanel,colorbutton,colordialog,menu,contextmenu,copyformatting,dialogadvtab,div,elementspath,enterkey,entities,popup,filebrowser,find,fakeobjects,floatingspace,listblock,richcombo,font,format,horizontalrule,htmlwriter,iframe,image,indent,indentblock,indentlist,justify,menubutton,language,link,list,liststyle,magicline,maximize,newpage,pagebreak,pastefromword,pastetext,removeformat,resize,save,scayt,selectall,showblocks,showborders,emoji,sourcearea,specialchar,stylescombo,tab,table,tabletools,undo,videodetector,wsc,wysiwygarea,lineutils,widgetselection,widget,html5video,markdown";
-       
+    
         a.filebrowserBrowseUrl = CKEDITOR.basePath + "../../../vendor/kcfinder/browse.php?type\x3dfiles";
         a.filebrowserImageBrowseUrl = CKEDITOR.basePath + "../../../vendor/kcfinder/browse.php?type\x3dimages";
         a.filebrowserFlashBrowseUrl = CKEDITOR.basePath + "../../../vendor/kcfinder/browse.php?type\x3dflash";
@@ -130,11 +163,10 @@ CKEDITOR.editorConfig = function (a) {
 CKEDITOR.on("instanceReady", function (event) {
     var this_instance = document.getElementById(event.editor.id + "_toolbox");
 
-    for (var i = 0; i < replacingIcons.length; i++) {
+    for (var i = 0; i < remixIcons.length; i++) {
         var this_button = this_instance.querySelector(
-            ".cke_button__" + replacingIcons[i] + "_icon"
+            ".cke_button__" + remixIcons[i].old + "_icon"
         );
-        console.log("this_button: ", this_button);
         if (typeof this_button !== null) {
             // if (typeof plgnIcons[i] === undefined)
             //      icon = plgnDefault
@@ -148,7 +180,7 @@ CKEDITOR.on("instanceReady", function (event) {
             if (typeof this_button !== undefined) {
                 this_button.innerHTML =
                     '<i class=" ' +
-                    plgnIcons[i] +
+                    remixIcons[i].new +
                     '" style="cursor: default; font-size:15px; font-weight:600"></i>';
             }
         }
