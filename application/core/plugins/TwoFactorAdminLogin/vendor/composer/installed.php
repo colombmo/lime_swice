@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '13ac2b2471485be6155d0e48e4d1f0ca5c6911eb',
+    'reference' => '46dc0ee5cd5d2ef7a818dba83b2d115fa4f5c3d7',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,16 +18,16 @@
       'aliases' => 
       array (
       ),
-      'reference' => '13ac2b2471485be6155d0e48e4d1f0ca5c6911eb',
+      'reference' => '46dc0ee5cd5d2ef7a818dba83b2d115fa4f5c3d7',
     ),
     'robthree/twofactorauth' => 
     array (
-      'pretty_version' => '1.6.5',
-      'version' => '1.6.5.0',
+      'pretty_version' => '1.8.2',
+      'version' => '1.8.2.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'f5f58a4c62d0336a0e6175856894a51f3565dad2',
+      'reference' => '65681de5a324eae05140ac58b08648a60212afc0',
     ),
   ),
 );

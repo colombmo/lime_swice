@@ -18,13 +18,9 @@ class TFAUserKey extends LSActiveRecord {
      * @var array
      */
     public static $authTypeOptions = [
-        'google' => 'Google Authenticator',
-        'authy' => 'Authy',
-        'yubi' => 'YubiKey',
-        'auplus' => 'Authenticator Plus',
-        'duo' => 'Duo',
-        'hde' => 'HDE OTP',
-        'other' => 'Other solution'
+        'totp' => 'TOTP (e.g. Google Authenticator, FreeOTP etc)',
+        'email' => 'E-mail',
+        'yubi' => 'YubiKey'
     ];
 
     /** @inheritdoc */
