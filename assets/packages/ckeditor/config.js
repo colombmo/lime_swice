@@ -257,16 +257,10 @@ CKEDITOR.on("instanceReady", function (event) {
     var this_instance = document.getElementById(event.editor.id + "_toolbox");
 
     for (var i = 0; i < remixIcons.length; i++) {
-        console.log('remixIcons[i].old : ', remixIcons[i].old );
         var this_button = this_instance.querySelector(
             ".cke_button__" + remixIcons[i].old + "_icon"
-            
         );
-        if (typeof this_button !== null) {
-            // if (typeof plgnIcons[i] === undefined)
-            //      icon = plgnDefault
-            // else
-            //      icon = plgnIcons[i];
+        if (this_button !== null) {
             this_button.setAttribute(
                 "style",
                 "background-image:none !important"
