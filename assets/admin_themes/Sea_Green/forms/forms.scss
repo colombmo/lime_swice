@@ -1,0 +1,13 @@
+.form-control {
+  padding: $input-padding-y $input-padding-x;
+  box-shadow: 8px 8px 0px $g-200;
+  color: $input-color !important; 
+  border: $input-border-width solid $input-border-color !important;
+  border-radius: $input-border-radius !important;
+  &:focus {
+    color: $input-focus-color !important;
+    background-color: $input-focus-bg;
+    outline: 0;
+    box-shadow: 8px 8px 0px $focus;
+  }
+}
