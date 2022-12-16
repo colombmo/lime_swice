@@ -1144,7 +1144,6 @@ DROP TABLE IF EXISTS `lime_surveys_languagesettings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `lime_surveys_languagesettings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `surveyls_survey_id` int(11) NOT NULL,
   `surveyls_language` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en',
   `surveyls_title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,

@@ -847,6 +847,7 @@ function populateDatabase($oDB)
 
         // surveys_languagesettings
         $oDB->createCommand()->createTable('{{surveys_languagesettings}}', array(
+            'id' => "autoincrement",
             'surveyls_survey_id' => "integer NOT NULL",
             'surveyls_language' => "string(45) NOT NULL DEFAULT 'en'",
             'surveyls_title' => "string(200) NOT NULL",
