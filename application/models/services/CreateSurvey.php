@@ -127,7 +127,7 @@ class CreateSurvey
             'surveyls_language' => $this->survey->language,
             'surveyls_urldescription' => '',
             'surveyls_endtext' => '',
-            'surveyls_url' => 'http://localhost:8000',
+            //'surveyls_url' => 'http://localhost:8000',
             'surveyls_dateformat' => $dateFormat,
             'surveyls_numberformat' => $numberFormat,
             'surveyls_policy_notice' => '',

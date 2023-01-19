@@ -180,7 +180,8 @@ class SurveyLanguageSetting extends LSActiveRecord
                 'email_admin_notification_subj' => $aDefaultTexts['admin_notification_subject'],
                 'email_admin_notification' => $aDefaultTexts['admin_notification'],
                 'email_admin_responses_subj' => $aDefaultTexts['admin_detailed_notification_subject'],
-                'email_admin_responses' => $aDefaultTexts['admin_detailed_notification']
+                'email_admin_responses' => $aDefaultTexts['admin_detailed_notification'],
+                'surveyls_url' => 'http://localhost:8000'
             );
             if ($sEmailFormat == "html") {
                 $aDefaultTextData['admin_detailed_notification'] = $aDefaultTexts['admin_detailed_notification_css'] . $aDefaultTexts['admin_detailed_notification'];
