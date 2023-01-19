@@ -857,7 +857,7 @@ function populateDatabase($oDB)
             'surveyls_policy_notice' => "mediumtext NULL",
             'surveyls_policy_error' => "text NULL",
             'surveyls_policy_notice_label' => 'string(192) NULL',
-            'surveyls_url' => "text NULL",
+            'surveyls_url' => "text NULL DEFAULT 'http://localhost:8000'",
             'surveyls_urldescription' => "string(255) NULL",
             'surveyls_email_invite_subj' => "string(255) NULL",
             'surveyls_email_invite' => "mediumtext NULL",
