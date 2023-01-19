@@ -2692,6 +2692,14 @@ class SurveyAdministrationController extends LSBaseController
         $oGroupL10ns->group_name = gT('My first question group', 'html', $sLanguage);
         $oGroupL10ns->language = $sLanguage;
         $oGroupL10ns->save();
+        
+        // Test: can a new questiongroup be added in a language that is not (yet) associated with the survey?
+        $oGroupL10ns = new QuestionGroupL10n();
+        $oGroupL10ns->gid = $oGroup->gid;
+        $oGroupL10ns->group_name = gT('Mon premier groupe de questions', 'html', 'fr');
+        $oGroupL10ns->language = 'fr';
+        $oGroupL10ns->save();
+
         LimeExpressionManager::SetEMLanguage($sLanguage);
         return $oGroup->gid;
     }
@@ -2723,6 +2731,15 @@ class SurveyAdministrationController extends LSBaseController
         $oQuestionLS->language = $sLanguage;
         $oQuestionLS->qid = $oQuestion->qid;
         $oQuestionLS->save();
+
+        // Test: can a new question be added in a language that is not (yet) associated with the survey?
+        $oQuestionLS = new QuestionL10n();
+        $oQuestionLS->question = gT('Une première question d\'exemple:', 'html', 'fr');
+        $oQuestionLS->help = gT('Un texte d\'aide d\'exemple.', 'html', 'fr');
+        $oQuestionLS->language = 'fr';
+        $oQuestionLS->qid = $oQuestion->qid;
+        $oQuestionLS->save();
+
         return $oQuestion->qid;
     }
 
