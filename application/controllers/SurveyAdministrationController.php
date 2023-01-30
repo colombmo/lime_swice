@@ -512,9 +512,9 @@ class SurveyAdministrationController extends LSBaseController
             // Figure out destination
             if ($createSample) {
                 $iNewGroupID = this->createAutofilledVariablesGroup($iNewSurveyid);
-                $iNewQuestionID = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXPERIMENT_ID", "experiment_id", "Insert the experiment ID", "Y", 1)
-                $group_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "GROUP_ID", "group_id", "Insert the group ID", "N", 2)
-                $user_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_S_SHORT_FREE_TEXT, "USER_ID", "user_id", "Insert the user ID", "N", 3)
+                $iNewQuestionID = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXPERIMENT_ID", "experiment_id", "Insert the experiment ID", "Y", 1);
+                $group_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "GROUP_ID", "group_id", "Insert the group ID", "N", 2);
+                $user_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_S_SHORT_FREE_TEXT, "USER_ID", "user_id", "Insert the user ID", "N", 3);
 
                 //$iNewGroupID = $this->createSampleGroup($iNewSurveyid);
                 //$iNewQuestionID = $this->createSampleQuestion($iNewSurveyid, $iNewGroupID);
