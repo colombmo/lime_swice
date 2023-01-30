@@ -511,10 +511,12 @@ class SurveyAdministrationController extends LSBaseController
 
             // Figure out destination
             if ($createSample) {
-                $iNewGroupID = this->createAutofilledVariablesGroup($iNewSurveyid);
-                $iNewQuestionID = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXPERIMENT_ID", "experiment_id", "Insert the experiment ID", "Y", 1);
-                $group_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "GROUP_ID", "group_id", "Insert the group ID", "N", 2);
-                $user_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_S_SHORT_FREE_TEXT, "USER_ID", "user_id", "Insert the user ID", "N", 3);
+                $iNewGroupID = $this->createAutofilledVariablesGroup($iNewSurveyid);
+                //$iNewQuestionID = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXP_ID", "experiment_id", "Insert the experiment ID", "Y", 1);
+
+                $iNewQuestionID = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXPERIMENTID", "experiment_id", "Insert the experiment ID", "Y", 1);
+                $group_id = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "GROUPID", "group_id", "Insert the group ID", "N", 2);
+                $user_id = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_S_SHORT_FREE_TEXT, "USERID", "user_id", "Insert the user ID", "N", 3);
 
                 //$iNewGroupID = $this->createSampleGroup($iNewSurveyid);
                 //$iNewQuestionID = $this->createSampleQuestion($iNewSurveyid, $iNewGroupID);
@@ -2769,45 +2771,19 @@ class SurveyAdministrationController extends LSBaseController
      */
     private function createAutofilledVariablesGroup($iSurveyID)
     {
-        // Create a new group to include the questions regarding: experiment_id (autofilled with link), group_id (autofilled with link, not mandatory), user_id (if in the url)
+
+        // Now create a new dummy group
         $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
         $oGroup = new QuestionGroup();
         $oGroup->sid = $iSurveyID;
         $oGroup->group_order = 1;
         $oGroup->grelevance = '1';
         $oGroup->save();
-
-        // English
         $oGroupL10ns = new QuestionGroupL10n();
         $oGroupL10ns->gid = $oGroup->gid;
-        $oGroupL10ns->group_name = gT('Experiment parameters', 'html', 'en');
-        $oGroupL10ns->language = 'en';
+        $oGroupL10ns->group_name = gT('Experiment parameters', 'html', $sLanguage);
+        $oGroupL10ns->language = $sLanguage;
         $oGroupL10ns->save();
-        
-        // TODO: We don't really need to have multiple languages in this case...
-        /* 
-        // French
-        $oGroupL10ns = new QuestionGroupL10n();
-        $oGroupL10ns->gid = $oGroup->gid;
-        $oGroupL10ns->group_name = gT('Paramètres de l\'expérience', 'html', 'fr');
-        $oGroupL10ns->language = 'fr';
-        $oGroupL10ns->save();
-
-        // German
-        $oGroupL10ns = new QuestionGroupL10n();
-        $oGroupL10ns->gid = $oGroup->gid;
-        $oGroupL10ns->group_name = gT('Experimentelle Parameter', 'html', 'de');
-        $oGroupL10ns->language = 'de';
-        $oGroupL10ns->save();
-
-        // Italian
-        $oGroupL10ns = new QuestionGroupL10n();
-        $oGroupL10ns->gid = $oGroup->gid;
-        $oGroupL10ns->group_name = gT('Parametri dell\'esperimento', 'html', 'it');
-        $oGroupL10ns->language = 'it';
-        $oGroupL10ns->save(); 
-        
-        */
 
         LimeExpressionManager::SetEMLanguage($sLanguage);
         return $oGroup->gid;
@@ -2827,7 +2803,7 @@ class SurveyAdministrationController extends LSBaseController
      *
      * @return int
      */
-    private function createQuestion($iSurveyID, $iGroupID, $questionType, $questionTitle, $questionText, $questionHelp, $mandatory, $order)
+    private function createDefaultQuestion($iSurveyID, $iGroupID, $questionType, $questionTitle, $questionText, $questionHelp, $mandatory, $order)
     {   
 
         // TODO: Include here all the questions to be included in all surveys when created!!!
