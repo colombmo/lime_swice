@@ -511,10 +511,15 @@ class SurveyAdministrationController extends LSBaseController
 
             // Figure out destination
             if ($createSample) {
-                $iNewGroupID = $this->createSampleGroup($iNewSurveyid);
-                $iNewQuestionID = $this->createSampleQuestion($iNewSurveyid, $iNewGroupID);
+                $iNewGroupID = this->createAutofilledVariablesGroup($iNewSurveyid);
+                $iNewQuestionID = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXPERIMENT_ID", "experiment_id", "Insert the experiment ID", "Y", 1)
+                $group_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "GROUP_ID", "group_id", "Insert the group ID", "N", 2)
+                $user_id = $this->createQuestion($iNewSurveyid, $iNewGroupID, Question::QT_S_SHORT_FREE_TEXT, "USER_ID", "user_id", "Insert the user ID", "N", 3)
 
-                Yii::app()->setFlashMessage(gT("Your new survey was created. We also created a first question group and an example question for you."), 'info');
+                //$iNewGroupID = $this->createSampleGroup($iNewSurveyid);
+                //$iNewQuestionID = $this->createSampleQuestion($iNewSurveyid, $iNewGroupID);
+
+                Yii::app()->setFlashMessage(gT("Your new survey was created. We also created a first set of questions for you, that should not be edited (they are important for the experiment structure)."), 'info');
                 $redirecturl = $this->getSurveyAndSidemenueDirectionURL(
                     $iNewSurveyid,
                     $iNewGroupID,
@@ -2680,6 +2685,10 @@ class SurveyAdministrationController extends LSBaseController
      */
     private function createSampleGroup($iSurveyID)
     {
+        
+        // TODO: Insert here the question groups to be included in all surveys when created!!
+        // Can be extended also for a predefined set of supported languages
+
         // Now create a new dummy group
         $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
         $oGroup = new QuestionGroup();
@@ -2693,7 +2702,8 @@ class SurveyAdministrationController extends LSBaseController
         $oGroupL10ns->language = $sLanguage;
         $oGroupL10ns->save();
         
-        // Test: can a new questiongroup be added in a language that is not (yet) associated with the survey?
+        // Testing if a new questiongroup be added in a language that is not (yet) associated with the survey
+        // It works...!
         $oGroupL10ns = new QuestionGroupL10n();
         $oGroupL10ns->gid = $oGroup->gid;
         $oGroupL10ns->group_name = gT('Mon premier groupe de questions', 'html', 'fr');
@@ -2713,13 +2723,17 @@ class SurveyAdministrationController extends LSBaseController
      * @return int
      */
     private function createSampleQuestion($iSurveyID, $iGroupID)
-    {
+    {   
+
+        // TODO: Include here all the questions to be included in all surveys when created!!!
+        // Can do also in multilingual version.
+
         // Now create a new dummy question
         $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
         $oQuestion = new Question();
         $oQuestion->sid = $iSurveyID;
         $oQuestion->gid = $iGroupID;
-        $oQuestion->type = Question::QT_T_LONG_FREE_TEXT;
+        $oQuestion->type = Question::QT_T_LONG_FREE_TEXT; //QT_S_SHORT_FREE_TEXT
         $oQuestion->title = 'Q00';
         $oQuestion->mandatory = 'N';
         $oQuestion->relevance = '1';
@@ -2732,11 +2746,109 @@ class SurveyAdministrationController extends LSBaseController
         $oQuestionLS->qid = $oQuestion->qid;
         $oQuestionLS->save();
 
-        // Test: can a new question be added in a language that is not (yet) associated with the survey?
+        // Testing if a new question be added in a language that is not (yet) associated with the survey
+        // It works..!
         $oQuestionLS = new QuestionL10n();
         $oQuestionLS->question = gT('Une première question d\'exemple:', 'html', 'fr');
         $oQuestionLS->help = gT('Un texte d\'aide d\'exemple.', 'html', 'fr');
         $oQuestionLS->language = 'fr';
+        $oQuestionLS->qid = $oQuestion->qid;
+        $oQuestionLS->save();
+
+        return $oQuestion->qid;
+    }
+
+    /**
+     * This private function creates a group to be included in all new surveys
+     * This group contains the parameters to save the link to the experiment they belong to,
+     * as well as information about the participant (their group for this experiment and id).
+     *
+     * @param int $iSurveyID The survey ID that the group will belong to
+     *
+     * @return int
+     */
+    private function createAutofilledVariablesGroup($iSurveyID)
+    {
+        // Create a new group to include the questions regarding: experiment_id (autofilled with link), group_id (autofilled with link, not mandatory), user_id (if in the url)
+        $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
+        $oGroup = new QuestionGroup();
+        $oGroup->sid = $iSurveyID;
+        $oGroup->group_order = 1;
+        $oGroup->grelevance = '1';
+        $oGroup->save();
+
+        // English
+        $oGroupL10ns = new QuestionGroupL10n();
+        $oGroupL10ns->gid = $oGroup->gid;
+        $oGroupL10ns->group_name = gT('Experiment parameters', 'html', 'en');
+        $oGroupL10ns->language = 'en';
+        $oGroupL10ns->save();
+        
+        // TODO: We don't really need to have multiple languages in this case...
+        /* 
+        // French
+        $oGroupL10ns = new QuestionGroupL10n();
+        $oGroupL10ns->gid = $oGroup->gid;
+        $oGroupL10ns->group_name = gT('Paramètres de l\'expérience', 'html', 'fr');
+        $oGroupL10ns->language = 'fr';
+        $oGroupL10ns->save();
+
+        // German
+        $oGroupL10ns = new QuestionGroupL10n();
+        $oGroupL10ns->gid = $oGroup->gid;
+        $oGroupL10ns->group_name = gT('Experimentelle Parameter', 'html', 'de');
+        $oGroupL10ns->language = 'de';
+        $oGroupL10ns->save();
+
+        // Italian
+        $oGroupL10ns = new QuestionGroupL10n();
+        $oGroupL10ns->gid = $oGroup->gid;
+        $oGroupL10ns->group_name = gT('Parametri dell\'esperimento', 'html', 'it');
+        $oGroupL10ns->language = 'it';
+        $oGroupL10ns->save(); 
+        
+        */
+
+        LimeExpressionManager::SetEMLanguage($sLanguage);
+        return $oGroup->gid;
+    }
+
+    /**
+     * This private function creates a question with the parameters defined
+     *
+     * @param int $iSurveyID The survey ID that the sample question will belong to
+     * @param int $iGroupID The group ID that the sample question will belong to
+     * @param Question $questionType The type of the question (e.g., Question::QT_N_NUMERICAL, QT_T_LONG_FREE_TEXT, QT_S_SHORT_FREE_TEXT)
+     * @param string $questionTitle The title of the question
+     * @param string $questionText The text of the question
+     * @param string $questionHelp The help text for this question
+     * @param string $mandatory Is this question mandatory? -> 'Y' or 'N'
+     * @param int $order The order of this question inside the group
+     *
+     * @return int
+     */
+    private function createQuestion($iSurveyID, $iGroupID, $questionType, $questionTitle, $questionText, $questionHelp, $mandatory, $order)
+    {   
+
+        // TODO: Include here all the questions to be included in all surveys when created!!!
+        // Can do also in multilingual version.
+
+        // Now create a new dummy question
+        $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
+        $oQuestion = new Question();
+        $oQuestion->sid = $iSurveyID;
+        $oQuestion->gid = $iGroupID;
+        $oQuestion->type = $questionType;
+        $oQuestion->title = $questionTitle;
+        $oQuestion->mandatory = $mandatory;
+        $oQuestion->relevance = '1';
+        $oQuestion->question_order = $order;
+        $oQuestion->save();
+
+        $oQuestionLS = new QuestionL10n();
+        $oQuestionLS->question = gT($questionText, 'html', $sLanguage);
+        $oQuestionLS->help = gT($questionHelp, 'html', $sLanguage);
+        $oQuestionLS->language = $sLanguage;
         $oQuestionLS->qid = $oQuestion->qid;
         $oQuestionLS->save();
 
