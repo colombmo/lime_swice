@@ -727,6 +727,7 @@ $config['homedir']                  = $config['rootdir']; // The directory path 
 $config['configdir']                = $config['rootdir'] . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'config';
 $config['tempdir']                  = $config['rootdir'] . DIRECTORY_SEPARATOR . "tmp"; // The directory path where LimeSurvey can store temporary files
 $config['imagedir']                 = $config['rootdir'] . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "images"; // The directory path of the image directory
+$config['surveysdir']               = $config['rootdir'] . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "surveys"; // The directory path of the surveys directory
 $config['uploaddir']                = $config['rootdir'] . DIRECTORY_SEPARATOR . "upload";
 $config['standardthemerootdir']     = $config['rootdir'] . DIRECTORY_SEPARATOR . "themes" . DIRECTORY_SEPARATOR . "survey"; // The directory path of the standard themes
 $config['publicstylepath']          = $config['rootdir'] . DIRECTORY_SEPARATOR . $config['publicstyle'];
