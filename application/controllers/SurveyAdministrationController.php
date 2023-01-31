@@ -485,9 +485,25 @@ class SurveyAdministrationController extends LSBaseController
                 $simpleSurveyValues->adminEmail = Yii::app()->request->getPost('adminemail');
             }
             $overrideAdministrator = ($administrator != 'owner');
+
+            /*
+            $surveyCreator = new \LimeSurvey\Models\Services\CreateSurvey(new Survey(), new SurveyLanguageSetting());
+            $newSurvey = $surveyCreator->createSimple(
+                $simpleSurveyValues,
+                (int)Yii::app()->user->getId(),
+                Permission::model(),
+                $overrideAdministrator
+            );
+            if (!$newSurvey) {
+                Yii::app()->setFlashMessage(gT("Survey could not be created."), 'error');
+                $this->redirect(Yii::app()->request->urlReferrer);
+            }
+
+            $iNewSurveyid = $newSurvey->sid;
+            */
             
             // Import template survey, instead of creating empty one
-            $iNewSurveyid = $this->importDefaultSurvey($surveyTitle);
+            $iNewSurveyid = $this->importDefaultSurvey($simpleSurveyValues, $overrideAdministrator);
 
             $this->aData['surveyid'] = $iNewSurveyid; //import to render correct layout in before_render
 
@@ -2755,7 +2771,7 @@ class SurveyAdministrationController extends LSBaseController
      * 
      * @return int
      */
-    private function importDefaultSurvey($iSurveyTitle)
+    private function importDefaultSurvey($simpleSurveyValues, $overrideAdministrator)
     {
         $sFullFilepath = Yii::app()->getConfig('tempdir') . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'default_survey.lss';
 
@@ -2787,29 +2803,49 @@ class SurveyAdministrationController extends LSBaseController
             }
             LimeExpressionManager::FinishProcessingPage();
             
-            // @todo: Update the title for all surveyls
-            $sLanguage = $oSurvey->language;
-            $iSurveyId = $oSurvey->sid;
-            
-            $oSurveyLanguageSetting = SurveyLanguageSetting::model()->findByPk(
-                ["surveyls_survey_id" => $iSurveyId, "surveyls_language" => $sLanguage]
-            );
+            try {
+                // Update parameters for this survey
+                $oSurvey->language = $simpleSurveyValues->baseLanguage; // Language
+                $oSurvey->gsid = $simpleSurveyValues->surveyGroupId; // Group id
+                if ($overrideAdministrator) {
+                    $oSurvey->admin = $simpleSurveyValues->admin; //admin name ...
+                    $oSurvey->adminemail = $simpleSurveyValues->adminEmail; // admin email
+                }
 
-            if ($oSurveyLanguageSetting == null) {
-                $oSurveyLanguageSetting = new SurveyLanguageSetting();
-                $oSurveyLanguageSetting->surveyls_survey_id = $iSurveyId;
-                $oSurveyLanguageSetting->surveyls_language = $sLanguage;
+                if (!$oSurvey->save()) {
+                    throw new \Exception("Survey value/values are not valid. Not possible to save survey");
+                }
+
+                // Update the title for surveyls
+                $sLanguage = $oSurvey->language;
+                $iSurveyId = $oSurvey->sid;
+                
+                $oSurveyLanguageSetting = SurveyLanguageSetting::model()->findByPk(
+                    ["surveyls_survey_id" => $iSurveyId, "surveyls_language" => $sLanguage]
+                );
+
+                if ($oSurveyLanguageSetting == null) {
+                    $oSurveyLanguageSetting = new SurveyLanguageSetting();
+                    $oSurveyLanguageSetting->surveyls_survey_id = $iSurveyId;
+                    $oSurveyLanguageSetting->surveyls_language = $sLanguage;
+                }
+
+                $oSurveyLanguageSetting->surveyls_title = $simpleSurveyValues->title; // title
+                
+                if (!$oSurveyLanguageSetting->save()) {
+                    throw new \Exception("Survey value/values are not valid. Not possible to save survey");
+                }
+
+            } catch(\Exception $e) {
+                return false;
             }
-
-            $oSurveyLanguageSetting->surveyls_title = $iSurveyTitle;
-            $oSurveyLanguageSetting->save();
 
             return $oSurvey->sid;
         }
 
         //Yii::app()->user->setFlash('error', gT("Unknown error while reading the file, no survey created."));
         //$this->redirect(Yii::app()->request->urlReferrer);
-        return 0;
+        return false;
     }
 
     /**
