@@ -66,6 +66,7 @@ App()->getClientScript()->registerScript("tabCreate-view-variables", "
                                 <span class='annotation text-warning'><?php echo  gT("Required"); ?> </span>
                             </div>
                         </div>
+                        <!--
                         <div class="form-group col-4">
                             <label class="control-label" for="language"><?= gT('Base language:')?></label>
                             <div class="">
@@ -79,6 +80,7 @@ App()->getClientScript()->registerScript("tabCreate-view-variables", "
                                 ));?>
                             </div>
                         </div>
+                        -->
                         <div class="form-group col-4">
                             <label class=" control-label" for='gsid'><?php  eT("Survey group:"); ?></label>
                             <div class="">
