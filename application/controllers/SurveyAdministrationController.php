@@ -485,41 +485,26 @@ class SurveyAdministrationController extends LSBaseController
                 $simpleSurveyValues->adminEmail = Yii::app()->request->getPost('adminemail');
             }
             $overrideAdministrator = ($administrator != 'owner');
+            
+            // Import template survey, instead of creating empty one
+            $iNewSurveyid = $this->importDefaultSurvey($surveyTitle);
 
-            $surveyCreator = new \LimeSurvey\Models\Services\CreateSurvey(new Survey(), new SurveyLanguageSetting());
-            $newSurvey = $surveyCreator->createSimple(
-                $simpleSurveyValues,
-                (int)Yii::app()->user->getId(),
-                Permission::model(),
-                $overrideAdministrator
-            );
-            if (!$newSurvey) {
-                Yii::app()->setFlashMessage(gT("Survey could not be created."), 'error');
-                $this->redirect(Yii::app()->request->urlReferrer);
-            }
-
-            $iNewSurveyid = $newSurvey->sid;
-            $this->aData['surveyid'] = $newSurvey->sid; //import to render correct layout in before_render
+            $this->aData['surveyid'] = $iNewSurveyid; //import to render correct layout in before_render
 
             // This will force the generation of the entry for survey group
-            TemplateConfiguration::checkAndcreateSurveyConfig($iNewSurveyid);
+            // TemplateConfiguration::checkAndcreateSurveyConfig($iNewSurveyid);
 
             $createSample = SettingsUser::getUserSettingValue('createsample');
             if ($createSample === null || $createSample === 'default') {
                 $createSample = Yii::app()->getConfig('createsample');
             }
+            //$createSample = true;
 
             // Figure out destination
             if ($createSample) {
-                $iNewGroupID = $this->createAutofilledVariablesGroup($iNewSurveyid);
-                //$iNewQuestionID = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXP_ID", "experiment_id", "Insert the experiment ID", "Y", 1);
-
-                $iNewQuestionID = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "EXPERIMENTID", "experiment_id", "Insert the experiment ID", "Y", 1);
-                $group_id = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_N_NUMERICAL, "GROUPID", "group_id", "Insert the group ID", "N", 2);
-                $user_id = $this->createDefaultQuestion($iNewSurveyid, $iNewGroupID, Question::QT_S_SHORT_FREE_TEXT, "USERID", "user_id", "Insert the user ID", "N", 3);
-
-                //$iNewGroupID = $this->createSampleGroup($iNewSurveyid);
-                //$iNewQuestionID = $this->createSampleQuestion($iNewSurveyid, $iNewGroupID);
+                // Create a sample question group with a sample question
+                $iNewGroupID = $this->createSampleGroup($iNewSurveyid);
+                $iNewQuestionID = $this->createSampleQuestion($iNewSurveyid, $iNewGroupID);
 
                 Yii::app()->setFlashMessage(gT("Your new survey was created. We also created a first set of questions for you, that should not be edited (they are important for the experiment structure)."), 'info');
                 $redirecturl = $this->getSurveyAndSidemenueDirectionURL(
@@ -2761,74 +2746,70 @@ class SurveyAdministrationController extends LSBaseController
     }
 
     /**
-     * This private function creates a group to be included in all new surveys
-     * This group contains the parameters to save the link to the experiment they belong to,
-     * as well as information about the participant (their group for this experiment and id).
+     * Private function responsible to import a predefined survey
      *
-     * @param int $iSurveyID The survey ID that the group will belong to
      *
+     * @access private
+     * 
+     * @param string $iSurveyTitle The title of the survey
+     * 
      * @return int
      */
-    private function createAutofilledVariablesGroup($iSurveyID)
+    private function importDefaultSurvey($iSurveyTitle)
     {
+        $sFullFilepath = Yii::app()->getConfig('tempdir') . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'default_survey.lss';
 
-        // Now create a new dummy group
-        $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
-        $oGroup = new QuestionGroup();
-        $oGroup->sid = $iSurveyID;
-        $oGroup->group_order = 1;
-        $oGroup->grelevance = '1';
-        $oGroup->save();
-        $oGroupL10ns = new QuestionGroupL10n();
-        $oGroupL10ns->gid = $oGroup->gid;
-        $oGroupL10ns->group_name = gT('Experiment parameters', 'html', $sLanguage);
-        $oGroupL10ns->language = $sLanguage;
-        $oGroupL10ns->save();
+        // Now, we have the survey : start importing
+        Yii::app()->loadHelper('admin/import');
 
-        LimeExpressionManager::SetEMLanguage($sLanguage);
-        return $oGroup->gid;
-    }
+        $aImportResults = importSurveyFile($sFullFilepath, (Yii::app()->request->getPost('translinksfields') == '1'));
+        if (is_null($aImportResults)) {
+            $aImportResults = array(
+                'error' => gT("Unknown error while reading the file, no survey created.")
+            );
+        }
 
-    /**
-     * This private function creates a question with the parameters defined
-     *
-     * @param int $iSurveyID The survey ID that the sample question will belong to
-     * @param int $iGroupID The group ID that the sample question will belong to
-     * @param Question $questionType The type of the question (e.g., Question::QT_N_NUMERICAL, QT_T_LONG_FREE_TEXT, QT_S_SHORT_FREE_TEXT)
-     * @param string $questionTitle The title of the question
-     * @param string $questionText The text of the question
-     * @param string $questionHelp The help text for this question
-     * @param string $mandatory Is this question mandatory? -> 'Y' or 'N'
-     * @param int $order The order of this question inside the group
-     *
-     * @return int
-     */
-    private function createDefaultQuestion($iSurveyID, $iGroupID, $questionType, $questionTitle, $questionText, $questionHelp, $mandatory, $order)
-    {   
+        if (!empty($aImportResults['newsid'])) {
+            $oSurvey = Survey::model()->findByPk($aImportResults['newsid']);
 
-        // TODO: Include here all the questions to be included in all surveys when created!!!
-        // Can do also in multilingual version.
+            LimeExpressionManager::SetDirtyFlag();
+            LimeExpressionManager::singleton();
+            // Why this @ !
+            LimeExpressionManager::SetSurveyId($aImportResults['newsid']);
+            LimeExpressionManager::RevertUpgradeConditionsToRelevance($aImportResults['newsid']);
+            LimeExpressionManager::UpgradeConditionsToRelevance($aImportResults['newsid']);
+            @LimeExpressionManager::StartSurvey($oSurvey->sid, 'survey', $oSurvey->attributes, true);
+            LimeExpressionManager::StartProcessingPage(true, true);
+            $aGrouplist = QuestionGroup::model()->findAllByAttributes(['sid' => $aImportResults['newsid']]);
+            foreach ($aGrouplist as $aGroup) {
+                LimeExpressionManager::StartProcessingGroup($aGroup['gid'], $oSurvey->anonymized != 'Y', $aImportResults['newsid']);
+                LimeExpressionManager::FinishProcessingGroup();
+            }
+            LimeExpressionManager::FinishProcessingPage();
+            
+            // @todo: Update the title for all surveyls
+            $sLanguage = $oSurvey->language;
+            $iSurveyId = $oSurvey->sid;
+            
+            $oSurveyLanguageSetting = SurveyLanguageSetting::model()->findByPk(
+                ["surveyls_survey_id" => $iSurveyId, "surveyls_language" => $sLanguage]
+            );
 
-        // Now create a new dummy question
-        $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
-        $oQuestion = new Question();
-        $oQuestion->sid = $iSurveyID;
-        $oQuestion->gid = $iGroupID;
-        $oQuestion->type = $questionType;
-        $oQuestion->title = $questionTitle;
-        $oQuestion->mandatory = $mandatory;
-        $oQuestion->relevance = '1';
-        $oQuestion->question_order = $order;
-        $oQuestion->save();
+            if ($oSurveyLanguageSetting == null) {
+                $oSurveyLanguageSetting = new SurveyLanguageSetting();
+                $oSurveyLanguageSetting->surveyls_survey_id = $iSurveyId;
+                $oSurveyLanguageSetting->surveyls_language = $sLanguage;
+            }
 
-        $oQuestionLS = new QuestionL10n();
-        $oQuestionLS->question = gT($questionText, 'html', $sLanguage);
-        $oQuestionLS->help = gT($questionHelp, 'html', $sLanguage);
-        $oQuestionLS->language = $sLanguage;
-        $oQuestionLS->qid = $oQuestion->qid;
-        $oQuestionLS->save();
+            $oSurveyLanguageSetting->surveyls_title = $iSurveyTitle;
+            $oSurveyLanguageSetting->save();
 
-        return $oQuestion->qid;
+            return $oSurvey->sid;
+        }
+
+        //Yii::app()->user->setFlash('error', gT("Unknown error while reading the file, no survey created."));
+        //$this->redirect(Yii::app()->request->urlReferrer);
+        return 0;
     }
 
     /**
