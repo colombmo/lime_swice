@@ -485,22 +485,6 @@ class SurveyAdministrationController extends LSBaseController
                 $simpleSurveyValues->adminEmail = Yii::app()->request->getPost('adminemail');
             }
             $overrideAdministrator = ($administrator != 'owner');
-
-            /*
-            $surveyCreator = new \LimeSurvey\Models\Services\CreateSurvey(new Survey(), new SurveyLanguageSetting());
-            $newSurvey = $surveyCreator->createSimple(
-                $simpleSurveyValues,
-                (int)Yii::app()->user->getId(),
-                Permission::model(),
-                $overrideAdministrator
-            );
-            if (!$newSurvey) {
-                Yii::app()->setFlashMessage(gT("Survey could not be created."), 'error');
-                $this->redirect(Yii::app()->request->urlReferrer);
-            }
-
-            $iNewSurveyid = $newSurvey->sid;
-            */
             
             // Import template survey, instead of creating empty one
             $iNewSurveyid = $this->importDefaultSurvey($simpleSurveyValues, $overrideAdministrator);
@@ -2696,7 +2680,7 @@ class SurveyAdministrationController extends LSBaseController
         $sLanguage = Survey::model()->findByPk($iSurveyID)->language;
         $oGroup = new QuestionGroup();
         $oGroup->sid = $iSurveyID;
-        $oGroup->group_order = 1;
+        $oGroup->group_order = 2;
         $oGroup->grelevance = '1';
         $oGroup->save();
         $oGroupL10ns = new QuestionGroupL10n();
