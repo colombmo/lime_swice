@@ -2813,7 +2813,7 @@ class SurveyAdministrationController extends LSBaseController
                 }
 
                 if (!$oSurvey->save()) {
-                    throw new \Exception("Survey value/values are not valid. Not possible to save survey");
+                    throw new \Exception("Survey values are not valid. Not possible to save survey");
                 }
 
                 // Update the title for surveyls
@@ -2833,18 +2833,21 @@ class SurveyAdministrationController extends LSBaseController
                 $oSurveyLanguageSetting->surveyls_title = $simpleSurveyValues->title; // title
                 
                 if (!$oSurveyLanguageSetting->save()) {
-                    throw new \Exception("Survey value/values are not valid. Not possible to save survey");
+                    throw new \Exception("Survey values are not valid. Not possible to save survey");
                 }
 
             } catch(\Exception $e) {
+                Yii::app()->user->setFlash('error', gT($e->getMessage()));
+                $this->redirect(Yii::app()->request->urlReferrer);
                 return false;
             }
 
             return $oSurvey->sid;
         }
 
-        //Yii::app()->user->setFlash('error', gT("Unknown error while reading the file, no survey created."));
-        //$this->redirect(Yii::app()->request->urlReferrer);
+        Yii::app()->user->setFlash('error', gT("Unknown error while reading the template file, no survey created."));
+        $this->redirect(Yii::app()->request->urlReferrer);
+
         return false;
     }
 
