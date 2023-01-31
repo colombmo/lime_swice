@@ -2773,7 +2773,7 @@ class SurveyAdministrationController extends LSBaseController
      */
     private function importDefaultSurvey($simpleSurveyValues, $overrideAdministrator)
     {
-        $sFullFilepath = Yii::app()->getConfig('tempdir') . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'default_survey.lss';
+        $sFullFilepath = Yii::app()->getConfig('surveysdir') . DIRECTORY_SEPARATOR . 'default_survey.lss';
 
         // Now, we have the survey : start importing
         Yii::app()->loadHelper('admin/import');
