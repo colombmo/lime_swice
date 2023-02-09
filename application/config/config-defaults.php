@@ -260,7 +260,7 @@ $config['disablescriptwithxss'] = true;
 // If this option is set to true, then limesurvey operators will only 'see'
 // users that belong to at least one of their groups
 // Otherwise they can see all operators defines in LimeSurvey
-$config['usercontrolSameGroupPolicy'] = false;
+$config['usercontrolSameGroupPolicy'] = true;
 
 // ownerManageAllSurveysInGroup
 // If this option is set to true, then owner of a group
