@@ -506,7 +506,7 @@ class SurveyAdministrationController extends LSBaseController
                 $iNewGroupID = $this->createSampleGroup($iNewSurveyid);
                 $iNewQuestionID = $this->createSampleQuestion($iNewSurveyid, $iNewGroupID);
 
-                Yii::app()->setFlashMessage(gT("Your new survey was created. We also created a first set of questions for you, that should not be edited (they are important for the experiment structure)."), 'info');
+                Yii::app()->setFlashMessage(gT("Your new survey was created, including an important first set of questions for you, important for the experiment structure."), 'info');
                 $redirecturl = $this->getSurveyAndSidemenueDirectionURL(
                     $iNewSurveyid,
                     $iNewGroupID,
@@ -524,7 +524,7 @@ class SurveyAdministrationController extends LSBaseController
                     'surveyAdministration/view/',
                     ['iSurveyID' => $iNewSurveyid]
                 );
-                Yii::app()->setFlashMessage(gT("Your new survey was created."), 'info');
+                Yii::app()->setFlashMessage(gT("Your new survey was created, including an important first set of questions for you, important for the experiment structure."), 'info');
             }
 
             return Yii::app()->getController()->renderPartial(
