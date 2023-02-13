@@ -2724,7 +2724,7 @@ class SurveyAdministrationController extends LSBaseController
         $oQuestion->title = 'Q00';
         $oQuestion->mandatory = 'N';
         $oQuestion->relevance = '1';
-        $oQuestion->question_order = 1;
+        $oQuestion->question_order = 11;
         $oQuestion->save();
         $oQuestionLS = new QuestionL10n();
         $oQuestionLS->question = gT('A first example question. Please answer this question:', 'html', $sLanguage);
