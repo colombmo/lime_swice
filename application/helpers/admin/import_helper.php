@@ -1377,6 +1377,9 @@ function XMLImportSurvey($sFullFilePath, $sXMLdata = null, $sNewSurveyName = nul
             continue;
         }
 
+        // Remove id, so that autoincrement is used
+        unset($insertdata['id']);
+
         // Assign new survey ID
         $insertdata['surveyls_survey_id'] = $iNewSID;
 
